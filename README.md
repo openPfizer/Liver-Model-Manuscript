@@ -17,3 +17,5 @@ QSP model of liver lipid metabolism for 2022 publication.
 * `mh.jl` - Main Metropolis-Hastings function used for generating plausible patients.
 * `select_vps` - Acceptance/rejection sampling of plausible patients to virtual patients
 * `util.jl` - Some shorter, misc. functions that were needed.
+
+![alt text](https://github.com/openPfizer/DigitalHealthData/blob/master/img/osbypfizer.png)
