@@ -67,7 +67,8 @@ end
 # Generates Figure 2 in the manuscript, but included here since it can be made more general for any future Vpop.
 # Presently many of the labels are hard-coded for the particular liver model though.
 function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
-        isel::Vector{Bool},fig_name::String)
+        isel::Vector{Bool},fig_name::String,
+        size_pt)
     npp = size(pp_obs,1)
 
     iNAFLD = (isel .&& pp_obs[:,1] .> 5)
@@ -79,7 +80,7 @@ function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
     pp_obs_plot = pp_obs[t,:]
 
     r = rand(dist,2000) # Draw some random variates from the actual distribution
-    fig_compare = Figure()
+    fig_compare = Figure(resolution = size_pt)
 
     labels = ["All VPs","NAFLD VPs","Data"]
 
@@ -113,5 +114,5 @@ function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
     leg.tellheight = true
     rowgap!(fig_compare.layout,1,Fixed(10))
     colgap!(fig_compare.layout,1,Fixed(10))
-    save(fig_name,fig_compare)
+    save(fig_name,fig_compare, pt_per_unit = 1)
 end

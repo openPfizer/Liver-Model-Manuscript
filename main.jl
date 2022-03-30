@@ -163,8 +163,13 @@ end
 
 # PLOTTING
 #######################################################################################
+# Options for submission quality:
+dpi = 600
+size_inches = (4,3)
+size_pt = dpi.*size_inches
+
 # FIGURE 2: PLAUSIBLE PATIENTS
-plot_select_vs_rand(d_joint,pp_obs,selecti,"Figure02.png")
+plot_select_vs_rand(d_joint,pp_obs,selecti,"Figure02.jpeg",size_pt)
 
 colors = distinguishable_colors(6,[RGB(1,1,1), RGB(0,0,0)], dropseed=true)
 
