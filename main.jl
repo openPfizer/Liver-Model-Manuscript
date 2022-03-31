@@ -9,25 +9,31 @@ ensure you have the correct project environment running.
 =#
 
 # Dependencies:
-using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics
-using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks
-using FileIO, JLD2, Colors
+using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics, CSV
+using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks, LinearAlgebra
+using FileIO, JLD2, Colors, AlgebraOfGraphics
 
 include("util.jl")
 include("dxdt.jl")
 include("mh.jl")
 include("mh_sim.jl")
 include("select_vps.jl")
+parsebool(s::String) = lowercase(s) == "true" ? true : false # https://stackoverflow.com/questions/37868940/convert-from-string-to-boolean-in-julias
 
-MAX_PP = 500_000 # Number of plausible patients
-NUM_SPECIES = 5 # Number of equations in model
-NUM_PARAM_FIT = 14 # Number of parameters to search in M-H
-FRAC_FAST_TG = 0.8 # Future extension: parameterize separately (fitting parameter?)
-MH_LOG_FIT = true  # Flag for setting M-H to use log boundaries for parameters
-MH_FIT = false # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
+df_rp = CSV.read("run_parameters.csv", DataFrame)
+
+# Parse the run parameters from the run_parameters file:
+MAX_PP = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "MAX_PP"])[1] # Number of plausible patients
+NUM_SPECIES = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "NUM_SPECIES"])[1] # Number of equations in model
+NUM_PARAM_FIT = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "NUM_PARAM_FIT"])[1] # Number of parameters to search in M-H
+FRAC_FAST_TG = parse.(Float64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "FRAC_FAST_TG"])[1] # Future extension: parameterize separately (fitting parameter?)
+MH_LOG_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_LOG_FIT"][1]))  # Flag for setting M-H to use log boundaries for parameters
+MH_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_FIT"][1])) # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
+JLD2_PP_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "JLD2_PP_FILE"][1])
+PARAM_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "PARAM_FILE"][1])
 
 # Read in parameters and their ranges:
-df = DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...)
+df = CSV.read(PARAM_FILE,DataFrame)
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
@@ -68,10 +74,23 @@ if MH_FIT
     pp_p = mh(MAX_PP, NUM_PARAM_FIT, MH_LOG_FIT,
         p, plb, pub,
         F_score, F_ODE)
-    FileIO.save("save_pp.jld2","pp_p",pp_p)
+    FileIO.save(JLD2_PP_FILE,"pp_p",pp_p)
 else
     # Skip the M-H plausible patient generation (DEFAULT)
-    pp_p = FileIO.load("save_pp.jld2","pp_p")
+    pp_p = FileIO.load(JLD2_PP_FILE,"pp_p")
+end
+
+# Create a DataFrame of plausible patients, this may be useful:
+SMALL_NUM = 1e-6
+
+df_pp = DataFrame(pp_p',:auto)
+rename!(df_pp,string.(df.Parameter))
+df_pp_scaled = df_pp
+for ii = 1:size(df_pp)[2]
+    if MH_LOG_FIT
+        df_pp_scaled[:,df.Parameter[ii]] .= ((log.(df_pp[:,df.Parameter[ii]]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)) 
+            ./ (log.(df[df.Parameter .== df.Parameter[ii],:HV]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)))
+    end
 end
 
 # Re-simulate each new PP
@@ -84,6 +103,11 @@ for ii = 1:MAX_PP
     pp_obs[ii,:] = [ltg_ss,pp_sol[5,end]]
 end
 selecti, pp_incld = select_vps(d_joint,pp_obs) # Select a Virtual Population
+
+# Plot the pp distribution:
+df_pp_scaled_stack = stack(df_pp_scaled[selecti,1:NUM_PARAM_FIT],1:NUM_PARAM_FIT)
+plt = data(df_pp_scaled_stack) * mapping(:value, layout = :variable) * histogram()
+draw(plt)
 
 # Flag NAFLD vs. Non-NAFLD patients:
 iNonNAFLD = ((pp_obs[:,1] .<= 5.0) .& (selecti))
@@ -163,11 +187,6 @@ end
 
 # PLOTTING
 #######################################################################################
-# Options for submission quality:
-#=dpi = 600
-size_inches = (4,3)
-size_pt = dpi.*size_inches
-=#
 
 # FIGURE 2: PLAUSIBLE PATIENTS
 plot_select_vs_rand(d_joint,pp_obs,selecti,"Figure02.png")

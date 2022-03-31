@@ -1,0 +1,28 @@
+ParamNum,Parameter,Units,TV,LVM,HVM,LV,HV,Description,Reference
+1,klipase_clear,1/day,16.801971423166567,0.15836293333333332,3.9590733333333334,2.6608094803554985,66.52023700888748,"Clearance rate constant for periphery (Muscle, Adipose)","See derived_parameters.jl, range set based on a reasonable range of 50 --> 500mg/dL TG in plasma"
+2,sens_nefa_uptake,dimensionless,0.001,0.001,100,1.0e-6,0.1,Sensitivity for feedback of cytosolic lipids on FA transport.,Assumption
+3,sens_betaox_dnl,dimensionless,0.1,0.1,2,0.010000000000000002,0.2,Sensitivity for feedback of DNL on beta oxidation rate,"Allowed to float in plausible population, range set broadly."
+4,kuptake_er,1/day,929.808692197991,0.25,4,232.45217304949776,3719.234768791964,Rate constant for FAs moving from cytosol to ER,"See derived_parameters.jl, range assumed at 0.25 --> 4x basal"
+5,kuptake_liver_tg,1/day,0.5734207183549842,0.25,4,0.14335517958874605,2.293682873419937,Rate constant for clearance of TG from plasma by liver,"See derived_parameters.jl, range assumed at 0.25 --> 4x basal"
+6,ksynth_cy_tg,1/(mM^2*day),14463.690767524306,0.25,4,3615.9226918810764,57854.76307009722,Rate constant for esterification of TG in the liver,"See derived_parameters.jl, range assumed at 0.25 --> 4x basal"
+7,klipo_cy_tg,1/day,0.27914923181321905,0.25,4,0.06978730795330476,1.1165969272528762,Rate constant for lipolysis in the liver,"See derived_parameters.jl, range assumed at 0.25 --> 4x basal"
+8,ksynth_er_tg,1/(mM^2*day),129140.09613860988,0.25,4,32285.02403465247,516560.3845544395,Rate constant for esterification of TG in the ER compartment,Back-calculated from VLDL flux
+9,kbetaox,1/day,1667.225980228621,0.25,4,416.80649505715525,6668.903920914484,Average rate of beta oxidation of fat in the liver,"See derived_parameters.jl, range assumed at 0.25 --> 4x basal"
+10,emax_vldl_prod,mmols-TG/day,33.62629534,0.25,4,8.406573835,134.50518136,Emax for production of VLDL from liver,Estimated from Adiels et al. Diabetolgia. 2006. Unit conversion from mg/kg/day --> mmol/day using 70kg BWT.
+11,ec50_vldl_prod,mM,26.67240932642487,0.25,4,6.668102331606217,106.68963730569948,EC50 for effect of TG-ER on VLDL production,Estimated from Adiels et al. Diabetolgia. 2006. Converted from % to mM TG in ER.
+12,chylo_basal_flux,mmols-TG/day,97.62521588946458,0.47500000000000003,1.7303571428571431,46.37197754749568,168.9264896373057,Daily absorption of chylomicron TG as mmols,See derived_parameters.jl
+13,dnl_basal_flux,mmols/day,9.665448866236932,0.1,8,0.9665448866236933,77.32359092989546,Basal flux of de novo synthesized FA,"See derived_parameters.jl, range set to reflect NAFLD state"
+14,nefa_uptake_flux,mmols/day,171.69402414356475,0.5,4,85.84701207178237,686.776096574259,Basal uptake of NEFAs into cytosol of hepatocytes,"See derived_parameters.jl, range assumed at 0.25 --> Limited by cardiac output."
+15,vd_tg_p,L,4.515,0.568557466519663,1.4314425334803371,2.567036961336278,6.462963038663721,Vol. dist. TG in plasma,https://doi.org/10.1007/s11745-001-0696-6
+16,vd_cyt,L,0.4962299999999999,0.5277280858676208,1.4722719141323792,0.2618745080500894,0.7305854919499104,Vol. of hepatocyte cytosol (total),See derived_parameters.jl
+17,vd_er,L,0.15879359999999998,0.5277280858676208,1.4722719141323792,0.08379984257602861,0.23378735742397133,Vol. of hepatocyte endoplasmic reticulum (total),» How big is the endoplasmic reticulum of cells? (bionumbers.org)
+18,scale_chylo,dimensionless,1,1,1,1,1,Scalar to chylomicron production (use for diet),Used for pharmacodynamics
+19,scale_dnl,dimensionless,1,1,1,1,1,"Scalar to DNL, creates feedback on beta oxidation",Used for pharmacodynamics
+20,scale_nefa_uptake,dimensionless,1,1,1,1,1,Scalar to NEFA uptake flux,Used for pharmacodynamics
+21,scale_tg_ester,dimensionless,1,1,1,1,1,Scalar to Esterification rate,Used for pharmacodynamics
+22,scale_vldl_prod,dimensionless,1,1,1,1,1,Scalar to VLDL production rate,Used for pharmacodynamics
+23,fa_cy_basal,mM,0.15,0.25,39.46153846153847,0.0375,5.9192307692307695,"Basal fatty acids, normalizing factor for optional regulation.","Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578"
+24,tg_cy_basal,mM,58.29015544041452,0.05717151454363089,39.46153846153847,3.332536469512164,2300.2192108409736,Basal concentration of TG in cytosol,See derived_parameters.jl. The range can go from 0 --> 80+%
+25,fa_er_basal,mM,0.15,0.25,39.46153846153847,0.0375,5.9192307692307695,Basal concentration of FA in ER,Set equivalent to cytosolic concentration
+26,tg_er_basal,mM,58.29015544041452,0.05717151454363089,39.46153846153847,3.332536469512164,2300.2192108409736,Basal concentration of TG in ER,Set equivalent to cytosolic concentration
+27,tg_p_basal,mM,1.5385,0.2525843589661554,6.314608974153885,0.38860103626943004,9.715025906735752,Basal mean concentration of TG in plasma (VLDL + LDL + HDL + Chylo.),"https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/triglycerides/art-20048186, scaled to reflect more average daily concentrations vs. fasting"
