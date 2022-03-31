@@ -67,8 +67,7 @@ end
 # Generates Figure 2 in the manuscript, but included here since it can be made more general for any future Vpop.
 # Presently many of the labels are hard-coded for the particular liver model though.
 function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
-        isel::Vector{Bool},fig_name::String,
-        size_pt)
+        isel::Vector{Bool},fig_name::String)
     npp = size(pp_obs,1)
 
     iNAFLD = (isel .&& pp_obs[:,1] .> 5)
@@ -80,7 +79,7 @@ function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
     pp_obs_plot = pp_obs[t,:]
 
     r = rand(dist,2000) # Draw some random variates from the actual distribution
-    fig_compare = Figure(resolution = size_pt)
+    fig_compare = Figure()
 
     labels = ["All VPs","NAFLD VPs","Data"]
 
@@ -93,7 +92,7 @@ function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
     axgb = Axis(gb[1,1], xlabel="log(Liver Fat, %)", 
         ylabel="log(Mean Plasma TG, mM)", 
         limits = (-3,5,-1.5,2.5))
-    axgc = Axis(gc[1,1],limits=(0,0.8,-1.5,2.5))
+    axgc = Axis(gc[1,1],limits=(0,1,-1.5,2.5))
     #poly!(axga,Point2f[(log(5),0),(5,0),(5,0.8),(log(5),0.8)],color = (:red,0.1))
     density!(axga,log.(r[1,:]),color=(:black,0),strokecolor=:black,strokewidth=2)
     density!(axga,log.(pp_obs[isel,1]),color=(:blue,0),strokecolor=:blue,strokewidth=2)
