@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.4
+# v0.19.4
 
 using Markdown
 using InteractiveUtils
@@ -55,7 +55,7 @@ vd_cyt = vol_frac_cytosol * vol_hepat * num_hepat * mass_liver * 1/mL_to_L # [L]
 
 # ╔═╡ 0feb0564-0a63-48ef-a748-3d3fbfe76d7d
 begin
-	bmr_liver = 300 # [kcal/day], https://www.fao.org/3/m2845e/m2845e00.htm
+	bmr_liver = 300 # [kcal/kg/day], https://www.fao.org/3/m2845e/m2845e00.htm
 	frac_liver_fatox = 0.6 # [fraction], portion of liver TEE that is from fat oxidation
 	fa_basal = 0.15 # [mM], Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578
 	
@@ -66,7 +66,7 @@ end
 
 # ╔═╡ 0244ae8f-b600-4087-82a3-3c104c51342a
 begin
-	liver_fat_ox = bmr_liver*frac_liver_fatox # [kcal/day]
+	liver_fat_ox = bmr_liver*frac_liver_fatox*mass_liver/kg_to_g # [kcal/day]
 	liver_fat_ox_mmol = liver_fat_ox/rhoe_fa # [mmols-FA/day]
 	kbetaox = liver_fat_ox_mmol/(fa_basal*vd_cyt) # [1/day]
 	
