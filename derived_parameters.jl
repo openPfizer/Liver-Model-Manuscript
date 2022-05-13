@@ -52,45 +52,6 @@ begin
 	"""
 end
 
-# ╔═╡ 0bcd76cf-e186-4c73-b701-801c933c14b9
-begin
-	vol_frac_cytosol = 0.7 # [fraction], 				https://www.proteinatlas.org/humanproteome/cell/cytosol
-	vol_hepat = 3.4e-9 # [cm^3/cell], https://en.wikipedia.org/wiki/Hepatocyte
-	num_hepat = 139*10^6 # [cells/g liver], https://www.sciencedirect.com/science/article/pii/S088723330600124X?via%3Dihub
-	mass_liver = 1500 # [g], https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/liver-weight
-	vol_hepat_tot = vol_hepat*num_hepat*mass_liver # [mL]
-	vd_cyt = vol_frac_cytosol * vol_hepat * num_hepat * mass_liver * 1/mL_to_L # [L]
-
-	# Write the values back to the DataFrame:
-	df[df.Parameter .== "vd_cyt", :TV] .= vd_cyt
-	df[df.Parameter .== "vd_cyt", :LV] .= vd_cyt .* df[df.Parameter .== "vd_cyt", :LV_M]
-	df[df.Parameter .== "vd_cyt", :HV] .= vd_cyt .* df[df.Parameter .== "vd_cyt", :HV_M]
-	
-	md"""
-	### Cytosolic Volume (L)
-	Determine the volume of the cytosol of a hepatocyte. This value can be floated for plausible patients, but reasonably not over orders-of-magnitude.
-	"""
-end
-
-# ╔═╡ 0feb0564-0a63-48ef-a748-3d3fbfe76d7d
-begin
-	bmr_liver = 300 # [kcal/kg/day], https://www.fao.org/3/m2845e/m2845e00.htm
-	frac_liver_fatox = 0.6 # [fraction], portion of liver TEE that is from fat oxidation
-	fa_basal = 0.15 # [mM], Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578
-	
-	md"""
-	### Rate of Beta Oxidation
-	"""
-end
-
-# ╔═╡ 0244ae8f-b600-4087-82a3-3c104c51342a
-begin
-	liver_fat_ox = bmr_liver*frac_liver_fatox*mass_liver/kg_to_g # [kcal/day]
-	liver_fat_ox_mmol = liver_fat_ox/rhoe_fa # [mmols-FA/day]
-	kbetaox = liver_fat_ox_mmol/(fa_basal*vd_cyt) # [1/day]
-	
-end
-
 # ╔═╡ 61be4a19-5772-4e31-8113-3d9cce2824d9
 md"""
 ### Daily Chylomicron Flux
@@ -229,6 +190,56 @@ liver_fat_ox_mmol
 
 # ╔═╡ be038ffd-7198-4dbf-8437-413763d657a7
 3*tot_tg_liver_uptake
+
+# ╔═╡ 65b59430-fabd-45d9-b332-0c0855870600
+begin
+	test = "me"
+	Meta.parse(test)
+end
+
+# ╔═╡ 0bcd76cf-e186-4c73-b701-801c933c14b9
+begin
+	pname = "vd_cyt"
+	vol_frac_cytosol = 0.7 # [fraction], 				https://www.proteinatlas.org/humanproteome/cell/cytosol
+	vol_hepat = 3.4e-9 # [cm^3/cell], https://en.wikipedia.org/wiki/Hepatocyte
+	num_hepat = 139*10^6 # [cells/g liver], https://www.sciencedirect.com/science/article/pii/S088723330600124X?via%3Dihub
+	mass_liver = 1500 # [g], https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/liver-weight
+	vol_hepat_tot = vol_hepat*num_hepat*mass_liver # [mL]
+	vd_cyt = vol_frac_cytosol * vol_hepat * num_hepat * mass_liver * 1/mL_to_L # [L]
+
+	# Write the values back to the DataFrame:
+	prow = df.Parameter .== pname
+	df[prow, :TV] .= vd_cyt
+	df[prow, :LV] .= vd_cyt .* df[prow, :LV_M]
+	df[prow, :HV] .= vd_cyt .* df[prow, :HV_M]
+	
+	md"""
+	### Cytosolic Volume (L)
+	Determine the volume of the cytosol of a hepatocyte. This value can be floated for plausible patients, but reasonably not over orders-of-magnitude.
+	"""
+end
+
+# ╔═╡ 0feb0564-0a63-48ef-a748-3d3fbfe76d7d
+begin
+	pname = "kbetaox"
+	
+	bmr_liver = 300 # [kcal/kg/day], https://www.fao.org/3/m2845e/m2845e00.htm
+	frac_liver_fatox = 0.6 # [fraction], portion of liver TEE that is from fat oxidation
+	fa_basal = 0.15 # [mM], Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578
+
+	liver_fat_ox = bmr_liver*frac_liver_fatox*mass_liver/kg_to_g # [kcal/day]
+	liver_fat_ox_mmol = liver_fat_ox/rhoe_fa # [mmols-FA/day]
+	kbetaox = liver_fat_ox_mmol/(fa_basal*vd_cyt) # [1/day]
+
+	# Write the values back to the DataFrame:
+	df[df.Parameter .== pname, :TV] .= kbetaox
+	df[df.Parameter .== pname, :LV] .= kbetaox .* df[df.Parameter .== pname, :LV_M]
+	df[df.Parameter .== pname, :HV] .= kbetaox .* df[df.Parameter .== pname, :HV_M]
+	
+	md"""
+	### Rate of Beta Oxidation
+	"""
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -549,7 +560,6 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═68c18624-20a2-4085-85c0-5efb600ee505
 # ╠═0bcd76cf-e186-4c73-b701-801c933c14b9
 # ╠═0feb0564-0a63-48ef-a748-3d3fbfe76d7d
-# ╠═0244ae8f-b600-4087-82a3-3c104c51342a
 # ╠═61be4a19-5772-4e31-8113-3d9cce2824d9
 # ╠═7c06328e-6039-4077-b25e-d2285ba3c4ff
 # ╠═2c37a8b3-3c8d-43ff-bdd3-4b71e5e1f9e1
@@ -574,5 +584,6 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═a6fbeffb-48b3-4012-a333-2f347efa9353
 # ╠═717e1304-44d8-48f0-aaf7-5ba30b4fc9dd
 # ╠═be038ffd-7198-4dbf-8437-413763d657a7
+# ╠═65b59430-fabd-45d9-b332-0c0855870600
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
