@@ -24,7 +24,7 @@ NUM_SPECIES = 5 # Number of equations in model
 NUM_PARAM_FIT = 14 # Number of parameters to search in M-H
 FRAC_FAST_TG = 0.8 # Future extension: parameterize separately (fitting parameter?)
 MH_LOG_FIT = true  # Flag for setting M-H to use log boundaries for parameters
-MH_FIT = false # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
+MH_FIT = true # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
 
 # Read in parameters and their ranges:
 df = CSV.read("parameters_pluto.csv",DataFrame) #DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...)
