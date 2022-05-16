@@ -52,9 +52,17 @@ begin
 	vol_hepat = 3.4e-9 # [cm^3/cell], https://en.wikipedia.org/wiki/Hepatocyte
 	num_hepat = 139*10^6 # [cells/g liver], https://www.sciencedirect.com/science/article/pii/S088723330600124X?via%3Dihub
 	mass_liver = 1500 # [g], https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/liver-weight
+
+	mass_liver_low = (1677 - 2*396)/1677 # [multiplier], Grandmaison et al. FSI. 2001. 2SD
+	mass_liver_high = (1677 + 2*396)/1677 # [multiplier], Grandmaison et al. FSI. 2001. 2SD
+	
 	vol_hepat_tot = vol_hepat*num_hepat*mass_liver # [mL]
 
-	diet_kcals = 2400 # [kcal/day]
+	diet_kcals = 2400 # [kcal/day], middle-aged male at normal BMI, moderate exercise (https://www.calculator.net/calorie-calculator.html?ctype=standard&cage=45&csex=m&cheightfeet=5&cheightinch=10&cpound=165&cheightmeter=180&ckg=65&cactivity=1.465&cmop=0&coutunit=c&cformula=m&cfatpct=20&printit=0&x=22&y=15)
+
+	diet_kcals_low = 1596 # [kcal/day], 60kg, 80 year old male with no regular exercise
+	diet_kcals_high = 3230 # [kcal/day], 25 year old, 120 kg male, regular exercise
+	
 	diet_frac_fat = 0.35 # [fraction]
 	lcfa_frac = 0.85 # [fraction]
 	ba_fat = 0.95 # [fraction], bioavailability of fat, https://www.sciencedirect.com/topics/medicine-and-dentistry/fat-intake
@@ -77,13 +85,19 @@ begin
 	frac_fa_dnl_basal = 0.05 # [fraction], Lambert et al. 2014.
 	frac_fa_diet_basal = 0.05 # [fraction], Lambert et al. 2014.
 
+	dnl_low = 0.0 #(3.3 - 2*sqrt(6)*0.8)/3.3 # [multiplier], Schwarz et al. JCI. 1995. 2SD of eucaloric feed value overlaps zero, assume the lower-bound is ~0
+	dnl_high = 8 # [multiplier], Schwarz et al. JCI. 1995. 6 - 10x increase observed from basal with high CHO intake.
+
 	# Useful values for setting LV/HV of parameters
-	tg_plasma_low = 50/tg_MW # [mM], low plasma TG value
-	tg_plasma_high = 500/tg_MW # [mM], high plasma TG value
+	tg_plasma_low = 50/tg_MW*10.0 # [mM], low plasma TG value, mg/dL --> mM
+	tg_plasma_high = 500/tg_MW*10.0 # [mM], high plasma TG value, mg/dL --> mM
 
 	lf_prct_low = 0 # [%], low liver fat as vol. %
 	lf_prct_high = 65 # [%], high liver fast as vol. %
 
+	Q_cardiac = 5*1440.0 # [L/day], cardiac output of adult converted to per day
+	nefa_high = 0.377 # [mM], https://pubmed.ncbi.nlm.nih.gov/12582008/
+	
 	md"""
 	### Useful constants for calculations
 	Various physical and biological constants used in the calculations below. Some could be treated as variables for inter-patient variability (e.g., diet kcals, diet frac fat), if desired.
@@ -242,24 +256,24 @@ begin
 	# LV_M, HV_M (low value multiplier, high value multiplier) should be pre-set (i.e., before the plausible patient search) based on biological constraints.
 	df[df.Parameter .== "klipase_clear", :LVM] .= tg_plasma_basal/tg_plasma_high
 	df[df.Parameter .== "klipase_clear", :HVM] .= tg_plasma_basal/tg_plasma_low
-	df[df.Parameter .== "chylo_basal_flux", :LVM] 
-	df[df.Parameter .== "chylo_basal_flux", :HVM]
-	df[df.Parameter .== "dnl_basal_flux", :LVM] 
-	df[df.Parameter .== "dnl_basal_flux", :HVM]
-	df[df.Parameter .== "nefa_uptake_flux", :LVM] 
-	df[df.Parameter .== "nefa_uptake_flux", :HVM]
+	df[df.Parameter .== "chylo_basal_flux", :LVM] .= diet_kcals_low/diet_kcals
+	df[df.Parameter .== "chylo_basal_flux", :HVM] .= diet_kcals_high/diet_kcals
+	df[df.Parameter .== "dnl_basal_flux", :LVM] .= dnl_low
+	df[df.Parameter .== "dnl_basal_flux", :HVM] .= dnl_high
+	#df[df.Parameter .== "nefa_uptake_flux", :LVM] .= No lower bound, keep at 0.25 multiplier
+	df[df.Parameter .== "nefa_uptake_flux", :HVM] .= Q_cardiac*nefa_high/nefa_uptake_flux # Based on limitations only by cardiac output
 	df[df.Parameter .== "vd_tg_p", :LVM] .= vd_tg_plasma_low/vd_tg_plasma
 	df[df.Parameter .== "vd_tg_p", :HVM] .= vd_tg_plasma_high/vd_tg_plasma
-	df[df.Parameter .== "vd_cyt", :LVM] 
-	df[df.Parameter .== "vd_cyt", :HVM]
-	df[df.Parameter .== "vd_er", :LVM] 
-	df[df.Parameter .== "vd_er", :HVM]
-	df[df.Parameter .== "fa_cy_basal", :LVM] 
-	df[df.Parameter .== "fa_cy_basal", :HVM]
+	df[df.Parameter .== "vd_cyt", :LVM] .= mass_liver_low
+	df[df.Parameter .== "vd_cyt", :HVM] .= mass_liver_high
+	df[df.Parameter .== "vd_er", :LVM] .= mass_liver_low
+	df[df.Parameter .== "vd_er", :HVM] .= mass_liver_high
+	#df[df.Parameter .== "fa_cy_basal", :LVM]  No lower bound, keep at 0.25 multiplier
+	df[df.Parameter .== "fa_cy_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
 	df[df.Parameter .== "tg_cy_basal", :LVM] .= lf_prct_low/(vol_frac_tg*100)
 	df[df.Parameter .== "tg_cy_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
-	df[df.Parameter .== "fa_er_basal", :LVM] 
-	df[df.Parameter .== "fa_er_basal", :HVM]
+	#df[df.Parameter .== "fa_er_basal", :LVM]  No lower bound, keep at 0.25 multiplier
+	df[df.Parameter .== "fa_er_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
 	df[df.Parameter .== "tg_er_basal", :LVM] .= lf_prct_low/(vol_frac_tg*100)
 	df[df.Parameter .== "tg_er_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
 	df[df.Parameter .== "tg_p_basal", :LVM] .= tg_plasma_low/tg_plasma_basal
