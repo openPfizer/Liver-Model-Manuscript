@@ -9,7 +9,7 @@ ensure you have the correct project environment running.
 =#
 
 # Dependencies:
-using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics
+using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics, CSV
 using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks
 using FileIO, JLD2, Colors
 
@@ -27,7 +27,7 @@ MH_LOG_FIT = true  # Flag for setting M-H to use log boundaries for parameters
 MH_FIT = false # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
 
 # Read in parameters and their ranges:
-df = DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...)
+df = CSV.read("parameters_pluto.csv",DataFrame) #DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...)
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
