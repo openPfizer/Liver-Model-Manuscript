@@ -60,8 +60,8 @@ begin
 
 	diet_kcals = 2400 # [kcal/day], middle-aged male at normal BMI, moderate exercise (https://www.calculator.net/calorie-calculator.html?ctype=standard&cage=45&csex=m&cheightfeet=5&cheightinch=10&cpound=165&cheightmeter=180&ckg=65&cactivity=1.465&cmop=0&coutunit=c&cformula=m&cfatpct=20&printit=0&x=22&y=15)
 
-	diet_kcals_low = 1596 # [kcal/day], 60kg, 80 year old male with no regular exercise
-	diet_kcals_high = 3230 # [kcal/day], 25 year old, 120 kg male, regular exercise
+	diet_kcals_low = 1596 # [kcal/day], 60kg, 80 year old male with no regular exercise, low-fat diet
+	diet_kcals_high = 3230 # [kcal/day], 25 year old, 120 kg male, regular exercise, high-fat diet
 	
 	diet_frac_fat = 0.35 # [fraction]
 	lcfa_frac = 0.85 # [fraction]
@@ -85,18 +85,18 @@ begin
 	frac_fa_dnl_basal = 0.05 # [fraction], Lambert et al. 2014.
 	frac_fa_diet_basal = 0.05 # [fraction], Lambert et al. 2014.
 
-	dnl_low = 0.0 #(3.3 - 2*sqrt(6)*0.8)/3.3 # [multiplier], Schwarz et al. JCI. 1995. 2SD of eucaloric feed value overlaps zero, assume the lower-bound is ~0
+	dnl_low = 0.1 #(3.3 - 2*sqrt(6)*0.8)/3.3 # [multiplier], Schwarz et al. JCI. 1995. 2SD of eucaloric feed value overlaps zero, assume the lower-bound is ~0. Lower bound 0 is not useful for parameter searching, so set at low, but non-zero.
 	dnl_high = 8 # [multiplier], Schwarz et al. JCI. 1995. 6 - 10x increase observed from basal with high CHO intake.
 
 	# Useful values for setting LV/HV of parameters
-	tg_plasma_low = 50/tg_MW*10.0 # [mM], low plasma TG value, mg/dL --> mM
-	tg_plasma_high = 500/tg_MW*10.0 # [mM], high plasma TG value, mg/dL --> mM
+	tg_plasma_low = 30/tg_MW*10.0 # [mM], low plasma TG value, mg/dL --> mM
+	tg_plasma_high = 750/tg_MW*10.0 # [mM], high plasma TG value, mg/dL --> mM
 
-	lf_prct_low = 0 # [%], low liver fat as vol. %
-	lf_prct_high = 65 # [%], high liver fast as vol. %
+	lf_prct_low = 0.1 # [%], low liver fat as vol. %. Functionally, there are many people without observable liver fat, set very low, but non-zero
+	lf_prct_high = 90 # [%], high liver fast as vol. %
 
 	Q_cardiac = 5*1440.0 # [L/day], cardiac output of adult converted to per day
-	nefa_high = 0.377 # [mM], https://pubmed.ncbi.nlm.nih.gov/12582008/
+	nefa_high = 0.900 # [mM], https://doi.org/10.1161/01.ATV.20.6.1588, Table 1, Diabetic group.
 	
 	md"""
 	### Useful constants for calculations
@@ -256,8 +256,8 @@ begin
 	# LV_M, HV_M (low value multiplier, high value multiplier) should be pre-set (i.e., before the plausible patient search) based on biological constraints.
 	df[df.Parameter .== "klipase_clear", :LVM] .= tg_plasma_basal/tg_plasma_high
 	df[df.Parameter .== "klipase_clear", :HVM] .= tg_plasma_basal/tg_plasma_low
-	df[df.Parameter .== "chylo_basal_flux", :LVM] .= diet_kcals_low/diet_kcals
-	df[df.Parameter .== "chylo_basal_flux", :HVM] .= diet_kcals_high/diet_kcals
+	df[df.Parameter .== "chylo_basal_flux", :LVM] .= diet_kcals_low/diet_kcals*0.25/0.35
+	df[df.Parameter .== "chylo_basal_flux", :HVM] .= diet_kcals_high/diet_kcals*0.45/0.35
 	df[df.Parameter .== "dnl_basal_flux", :LVM] .= dnl_low
 	df[df.Parameter .== "dnl_basal_flux", :HVM] .= dnl_high
 	#df[df.Parameter .== "nefa_uptake_flux", :LVM] .= No lower bound, keep at 0.25 multiplier
@@ -312,6 +312,7 @@ XLSX = "~0.7.10"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
+julia_version = "1.7.2"
 manifest_format = "2.0"
 
 [[deps.ArgTools]]
