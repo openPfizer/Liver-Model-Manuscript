@@ -18,16 +18,18 @@ include("dxdt.jl")
 include("mh.jl")
 include("mh_sim.jl")
 include("select_vps.jl")
+include("plot_pp.jl")
 
-MAX_PP = 100_000 # Number of plausible patients
+MAX_PP = 500_000 # Number of plausible patients
 NUM_SPECIES = 5 # Number of equations in model
 NUM_PARAM_FIT = 14 # Number of parameters to search in M-H
 FRAC_FAST_TG = 0.8 # Future extension: parameterize separately (fitting parameter?)
 MH_LOG_FIT = true  # Flag for setting M-H to use log boundaries for parameters
 MH_FIT = true # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
+JLD2_PP_FILE = "save_pp_XLSX.jld2"
 
 # Read in parameters and their ranges:
-df = CSV.read("parameters_pluto.csv",DataFrame) #DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...) #
+df = DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...) #CSV.read("parameters_pluto.csv",DataFrame)  #
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
@@ -68,11 +70,17 @@ if MH_FIT
     pp_p = mh(MAX_PP, NUM_PARAM_FIT, MH_LOG_FIT,
         p, plb, pub,
         F_score, F_ODE)
-    FileIO.save("save_pp.jld2","pp_p",pp_p)
+    FileIO.save(JLD2_PP_FILE,"pp_p",pp_p)
 else
     # Skip the M-H plausible patient generation (DEFAULT)
-    pp_p = FileIO.load("save_pp.jld2","pp_p")
+    pp_p = FileIO.load(JLD2_PP_FILE,"pp_p")
 end
+
+# Create a DataFrame of plausible patients, this may be useful:
+df_pp = DataFrame(p_pp',:auto)
+rename!(df_pp,string.(df.Parameter))
+# Plot the pp distribution:
+plot_pp(stack(df_pp,1:size(df_pp)[2]),"xlsx_pp.png")
 
 # Re-simulate each new PP
 pp_ss = Matrix{Float64}(undef,NUM_SPECIES,MAX_PP)
