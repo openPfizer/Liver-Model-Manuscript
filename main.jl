@@ -11,7 +11,7 @@ ensure you have the correct project environment running.
 # Dependencies:
 using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics, CSV
 using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks
-using FileIO, JLD2, Colors
+using FileIO, JLD2, Colors, AlgebraOfGraphics
 
 include("util.jl")
 include("dxdt.jl")
@@ -20,7 +20,7 @@ include("mh_sim.jl")
 include("select_vps.jl")
 include("plot_pp.jl")
 
-MAX_PP = 500_000 # Number of plausible patients
+MAX_PP = 50_000 # Number of plausible patients
 NUM_SPECIES = 5 # Number of equations in model
 NUM_PARAM_FIT = 14 # Number of parameters to search in M-H
 FRAC_FAST_TG = 0.8 # Future extension: parameterize separately (fitting parameter?)
@@ -29,7 +29,7 @@ MH_FIT = true # Flag for doing the PP fitting vs. loading existing, setting to t
 JLD2_PP_FILE = "save_pp_XLSX.jld2"
 
 # Read in parameters and their ranges:
-df = DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...) #CSV.read("parameters_pluto.csv",DataFrame)  #
+df = CSV.read("parameters_pluto.csv",DataFrame)#DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...) #CSV.read("parameters_pluto.csv",DataFrame)  #
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
@@ -77,10 +77,24 @@ else
 end
 
 # Create a DataFrame of plausible patients, this may be useful:
+SMALL_NUM = 1e-6
+
 df_pp = DataFrame(p_pp',:auto)
 rename!(df_pp,string.(df.Parameter))
+df_pp_scaled = df_pp
+for ii = 1:size(df_pp)[2]
+    #println(df.Parameter[ii])
+    if MH_LOG_FIT
+        df_pp_scaled[:,df.Parameter[ii]] .= ((log.(df_pp[:,df.Parameter[ii]]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)) 
+            ./ (log.(df[df.Parameter .== df.Parameter[ii],:HV]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)))
+    end
+end
+
 # Plot the pp distribution:
-plot_pp(stack(df_pp,1:size(df_pp)[2]),"xlsx_pp.png")
+df_pp_scaled_stack = stack(df_pp_scaled[selecti,1:NUM_PARAM_FIT],1:NUM_PARAM_FIT)
+plt = data(df_pp_scaled_stack) * mapping(:value, layout = :variable) * histogram()
+draw(plt)
+
 
 # Re-simulate each new PP
 pp_ss = Matrix{Float64}(undef,NUM_SPECIES,MAX_PP)
