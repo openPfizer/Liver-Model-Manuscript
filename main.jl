@@ -18,18 +18,21 @@ include("dxdt.jl")
 include("mh.jl")
 include("mh_sim.jl")
 include("select_vps.jl")
-include("plot_pp.jl")
+parsebool(s::String) = lowercase(s) == "true" ? true : false
 
-MAX_PP = 50_000 # Number of plausible patients
-NUM_SPECIES = 5 # Number of equations in model
-NUM_PARAM_FIT = 14 # Number of parameters to search in M-H
-FRAC_FAST_TG = 0.8 # Future extension: parameterize separately (fitting parameter?)
-MH_LOG_FIT = true  # Flag for setting M-H to use log boundaries for parameters
-MH_FIT = true # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
-JLD2_PP_FILE = "save_pp_XLSX.jld2"
+df_rp = CSV.read("run_parameters.csv", DataFrame)
+
+# Parse the run parameters from the run_parameters file:
+MAX_PP = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "MAX_PP"])[1] # Number of plausible patients
+NUM_SPECIES = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "NUM_SPECIES"])[1] # Number of equations in model
+NUM_PARAM_FIT = parse.(Int64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "NUM_PARAM_FIT"])[1] # Number of parameters to search in M-H
+FRAC_FAST_TG = parse.(Float64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "FRAC_FAST_TG"])[1] # Future extension: parameterize separately (fitting parameter?)
+MH_LOG_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_LOG_FIT"][1]))  # Flag for setting M-H to use log boundaries for parameters
+MH_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_FIT"][1])) # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
+JLD2_PP_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "JLD2_PP_FILE"][1])
 
 # Read in parameters and their ranges:
-df = CSV.read("parameters_pluto.csv",DataFrame)#DataFrame(XLSX.readtable("parameters.xlsx", "parameters")...) #CSV.read("parameters_pluto.csv",DataFrame)  #
+df = CSV.read("parameters_pluto.csv",DataFrame)
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
@@ -90,12 +93,6 @@ for ii = 1:size(df_pp)[2]
     end
 end
 
-# Plot the pp distribution:
-df_pp_scaled_stack = stack(df_pp_scaled[selecti,1:NUM_PARAM_FIT],1:NUM_PARAM_FIT)
-plt = data(df_pp_scaled_stack) * mapping(:value, layout = :variable) * histogram()
-draw(plt)
-
-
 # Re-simulate each new PP
 pp_ss = Matrix{Float64}(undef,NUM_SPECIES,MAX_PP)
 pp_obs = Matrix{Float64}(undef,MAX_PP,2) # [%, mM-plasma TG], observables as Array
@@ -106,6 +103,11 @@ for ii = 1:MAX_PP
     pp_obs[ii,:] = [ltg_ss,pp_sol[5,end]]
 end
 selecti, pp_incld = select_vps(d_joint,pp_obs) # Select a Virtual Population
+
+# Plot the pp distribution:
+df_pp_scaled_stack = stack(df_pp_scaled[selecti,1:NUM_PARAM_FIT],1:NUM_PARAM_FIT)
+plt = data(df_pp_scaled_stack) * mapping(:value, layout = :variable) * histogram()
+draw(plt)
 
 # Flag NAFLD vs. Non-NAFLD patients:
 iNonNAFLD = ((pp_obs[:,1] .<= 5.0) .& (selecti))

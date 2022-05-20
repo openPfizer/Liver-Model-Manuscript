@@ -111,7 +111,7 @@ function plot_select_vs_rand(dist::Distribution,pp_obs::Matrix,
     hidedecorations!(axga,grid=false)
     hidedecorations!(axgc,grid=false)
     leg.tellheight = true
-    rowgap!(fig_compare.layout,1,Fixed(10))
-    colgap!(fig_compare.layout,1,Fixed(10))
+    rowgap!(fig_compare.layout,1,CairoMakie.Fixed(10))
+    colgap!(fig_compare.layout,1,CairoMakie.Fixed(10))
     save(fig_name,fig_compare, pt_per_unit = 1)
 end
