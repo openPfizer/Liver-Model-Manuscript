@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.4
+# v0.19.5
 
 using Markdown
 using InteractiveUtils
@@ -26,7 +26,7 @@ end
 # ╔═╡ 8f830c81-e3ce-445f-a338-154d4a3f9038
 begin
 	df = DataFrame(XLSX.readtable("parameters.xlsx","parameters")...)
-	dict1 = Dict(Pair.(df.Parameter, df.ParamNum))
+	#dict1 = Dict(Pair.(df.Parameter, df.ParamNum))
 	md"""
 	#### Load parameters.xlsx into a DataFrame
 	"""
