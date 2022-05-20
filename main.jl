@@ -18,7 +18,7 @@ include("dxdt.jl")
 include("mh.jl")
 include("mh_sim.jl")
 include("select_vps.jl")
-parsebool(s::String) = lowercase(s) == "true" ? true : false
+parsebool(s::String) = lowercase(s) == "true" ? true : false # https://stackoverflow.com/questions/37868940/convert-from-string-to-boolean-in-julias
 
 df_rp = CSV.read("run_parameters.csv", DataFrame)
 
@@ -86,7 +86,6 @@ df_pp = DataFrame(p_pp',:auto)
 rename!(df_pp,string.(df.Parameter))
 df_pp_scaled = df_pp
 for ii = 1:size(df_pp)[2]
-    #println(df.Parameter[ii])
     if MH_LOG_FIT
         df_pp_scaled[:,df.Parameter[ii]] .= ((log.(df_pp[:,df.Parameter[ii]]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)) 
             ./ (log.(df[df.Parameter .== df.Parameter[ii],:HV]) .- log.(df[df.Parameter .== df.Parameter[ii],:LV] .+ SMALL_NUM)))
