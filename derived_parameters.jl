@@ -92,8 +92,8 @@ begin
 	tg_plasma_low = 30/tg_MW*10.0 # [mM], low plasma TG value, mg/dL --> mM
 	tg_plasma_high = 750/tg_MW*10.0 # [mM], high plasma TG value, mg/dL --> mM
 
-	lf_prct_low = 0.1 # [%], low liver fat as vol. %. Functionally, there are many people without observable liver fat, set very low, but non-zero
-	lf_prct_high = 90 # [%], high liver fast as vol. %
+	lf_prct_low = 1 # [%], low liver fat as vol. %. Functionally, there are many people without observable liver fat, set very low, but non-zero
+	lf_prct_high = 60 # [%], high liver fast as vol. %
 
 	Q_cardiac = 5*1440.0 # [L/day], cardiac output of adult converted to per day
 	nefa_high = 0.900 # [mM], https://doi.org/10.1161/01.ATV.20.6.1588, Table 1, Diabetic group.
@@ -268,14 +268,20 @@ begin
 	df[df.Parameter .== "vd_cyt", :HVM] .= mass_liver_high
 	df[df.Parameter .== "vd_er", :LVM] .= mass_liver_low
 	df[df.Parameter .== "vd_er", :HVM] .= mass_liver_high
+	
+	
+	
+	lf_frac_high = lf_prct_high/100
+	lf_frac_low = lf_frac_low/100
+	
 	#df[df.Parameter .== "fa_cy_basal", :LVM]  No lower bound, keep at 0.25 multiplier
-	df[df.Parameter .== "fa_cy_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
-	df[df.Parameter .== "tg_cy_basal", :LVM] .= lf_prct_low/(vol_frac_tg*100)
-	df[df.Parameter .== "tg_cy_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
+	df[df.Parameter .== "fa_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
+	df[df.Parameter .== "tg_cy_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_prct_low)*lf_prct_low/vol_frac_tg
+	df[df.Parameter .== "tg_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
 	#df[df.Parameter .== "fa_er_basal", :LVM]  No lower bound, keep at 0.25 multiplier
-	df[df.Parameter .== "fa_er_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
-	df[df.Parameter .== "tg_er_basal", :LVM] .= lf_prct_low/(vol_frac_tg*100)
-	df[df.Parameter .== "tg_er_basal", :HVM] .= lf_prct_high/(vol_frac_tg*100)
+	df[df.Parameter .== "fa_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
+	df[df.Parameter .== "tg_er_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_prct_low)*lf_prct_low/vol_frac_tg
+	df[df.Parameter .== "tg_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
 	df[df.Parameter .== "tg_p_basal", :LVM] .= tg_plasma_low/tg_plasma_basal
 	df[df.Parameter .== "tg_p_basal", :HVM] .= tg_plasma_high/tg_plasma_basal
 		
@@ -312,7 +318,7 @@ XLSX = "~0.7.10"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.7.2"
+julia_version = "1.7.3"
 manifest_format = "2.0"
 
 [[deps.ArgTools]]
@@ -386,7 +392,7 @@ deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.Downloads]]
-deps = ["ArgTools", "LibCURL", "NetworkOptions"]
+deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
 [[deps.EzXML]]
@@ -400,6 +406,9 @@ deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
 git-tree-sha1 = "129b104185df66e408edd6625d480b7f9e9823a0"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
 version = "0.9.18"
+
+[[deps.FileWatching]]
+uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.Formatting]]
 deps = ["Printf"]

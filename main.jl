@@ -10,7 +10,7 @@ ensure you have the correct project environment running.
 
 # Dependencies:
 using DifferentialEquations, CairoMakie, DataFrames, XLSX, Distributions, Statistics, CSV
-using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks
+using Trapz, LsqFit, ReadStatTables, DiffEqCallbacks, LinearAlgebra
 using FileIO, JLD2, Colors, AlgebraOfGraphics
 
 include("util.jl")
@@ -32,7 +32,7 @@ MH_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_FIT"][1])) # F
 JLD2_PP_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "JLD2_PP_FILE"][1])
 
 # Read in parameters and their ranges:
-df = CSV.read("parameters_pluto.csv",DataFrame)
+df = CSV.read("parameters_pluto_FINAL.csv",DataFrame)
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:
