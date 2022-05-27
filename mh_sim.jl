@@ -11,6 +11,7 @@ function mh_sim(p::Vector,OdeF::Function,
     sol = solve(OdeF(p),Rodas4()) # Simulate the model, the timing etc. should be pre-definied in OdeF
     sim_obs = GetObs(sol,p) # Get the observables from the solution construct
     
+    
     # Score the solution, if any X is out-of-bounds, default to eps()
     if all(sol[:,end] .>= xlb) && all(sol[:,end] .<= xub)
         q = pdf(d_obs,sim_obs)
