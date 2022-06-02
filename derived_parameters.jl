@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.5
+# v0.19.6
 
 using Markdown
 using InteractiveUtils
@@ -272,16 +272,16 @@ begin
 	
 	
 	lf_frac_high = lf_prct_high/100
-	lf_frac_low = lf_frac_low/100
+	lf_frac_low = lf_prct_low/100
 	
 	#df[df.Parameter .== "fa_cy_basal", :LVM]  No lower bound, keep at 0.25 multiplier
-	df[df.Parameter .== "fa_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
-	df[df.Parameter .== "tg_cy_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_prct_low)*lf_prct_low/vol_frac_tg
-	df[df.Parameter .== "tg_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
+	df[df.Parameter .== "fa_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_frac_high)*lf_frac_high/vol_frac_tg
+	df[df.Parameter .== "tg_cy_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_frac_low)*lf_frac_low/vol_frac_tg
+	df[df.Parameter .== "tg_cy_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_frac_high)*lf_frac_high/vol_frac_tg
 	#df[df.Parameter .== "fa_er_basal", :LVM]  No lower bound, keep at 0.25 multiplier
-	df[df.Parameter .== "fa_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
-	df[df.Parameter .== "tg_er_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_prct_low)*lf_prct_low/vol_frac_tg
-	df[df.Parameter .== "tg_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_prct_high)*lf_prct_high/vol_frac_tg
+	df[df.Parameter .== "fa_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_frac_high)*lf_frac_high/vol_frac_tg
+	df[df.Parameter .== "tg_er_basal", :LVM] .= (1-vol_frac_tg)/(1-lf_frac_low)*lf_frac_low/vol_frac_tg
+	df[df.Parameter .== "tg_er_basal", :HVM] .= (1-vol_frac_tg)/(1-lf_frac_high)*lf_frac_high/vol_frac_tg
 	df[df.Parameter .== "tg_p_basal", :LVM] .= tg_plasma_low/tg_plasma_basal
 	df[df.Parameter .== "tg_p_basal", :HVM] .= tg_plasma_high/tg_plasma_basal
 		

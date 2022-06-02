@@ -1,5 +1,5 @@
 RUN_PARAMETER,VALUE,DESCRIPTION
-MAX_PP,50000,Maximum number of plausible patients
+MAX_PP,500000,Maximum number of plausible patients
 NUM_SPECIES,5,Number of species (equations) in the model
 NUM_PARAM_FIT,14,"Number of parameters to fit. Right now, this means 1:NUM_PARAM_FIT are fitted."
 FRAC_FAST_TG,0.8,Fraction of triglyceride that is in the fasted state. This parameter can be moved to the PP search.

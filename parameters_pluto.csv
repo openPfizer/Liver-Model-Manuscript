@@ -21,8 +21,8 @@ ParamNum,Parameter,Units,TV,LVM,HVM,LV,HV,Description,Reference
 20,scale_nefa_uptake,dimensionless,1.0,1.0,1.0,1.0,1.0,Scalar to NEFA uptake flux,Used for pharmacodynamics
 21,scale_tg_ester,dimensionless,1.0,1.0,1.0,1.0,1.0,Scalar to Esterification rate,Used for pharmacodynamics
 22,scale_vldl_prod,dimensionless,1.0,1.0,1.0,1.0,1.0,Scalar to VLDL production rate,Used for pharmacodynamics
-23,fa_cy_basal,mM,0.15,0.25,-19.322033898305083,0.0375,-2.8983050847457625,"Basal fatty acids, normalizing factor for optional regulation.","Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578"
-24,tg_cy_basal,mM,58.29015544041452,Inf,-19.322033898305083,Inf,-1126.284359357162,Basal concentration of TG in cytosol,See derived_parameters.jl. The range can go from 0 --> 80+%
-25,fa_er_basal,mM,0.15,0.25,-19.322033898305083,0.0375,-2.8983050847457625,Basal concentration of FA in ER,Set equivalent to cytosolic concentration
-26,tg_er_basal,mM,58.29015544041452,Inf,-19.322033898305083,Inf,-1126.284359357162,Basal concentration of TG in ER,Set equivalent to cytosolic concentration
+23,fa_cy_basal,mM,0.15,0.25,28.49999999999999,0.0375,4.274999999999999,"Basal fatty acids, normalizing factor for optional regulation.","Holzhütter H-G, Berndt N. Computational Hypothesis: How Intra-Hepatic Functional Heterogeneity May Influence the Cascading Progression of Free Fatty Acid-Induced Non-Alcoholic Fatty Liver Disease (NAFLD). Cells. 2021; 10(3):578. https://doi.org/10.3390/cells10030578"
+24,tg_cy_basal,mM,58.29015544041452,0.1919191919191919,28.49999999999999,11.186999528968443,1661.2694300518133,Basal concentration of TG in cytosol,See derived_parameters.jl. The range can go from 0 --> 80+%
+25,fa_er_basal,mM,0.15,0.25,28.49999999999999,0.0375,4.274999999999999,Basal concentration of FA in ER,Set equivalent to cytosolic concentration
+26,tg_er_basal,mM,58.29015544041452,0.1919191919191919,28.49999999999999,11.186999528968443,1661.2694300518133,Basal concentration of TG in ER,Set equivalent to cytosolic concentration
 27,tg_p_basal,mM,1.5385,0.2525843589661554,6.314608974153885,0.38860103626943004,9.715025906735752,Basal mean concentration of TG in plasma (VLDL + LDL + HDL + Chylo.),"https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/triglycerides/art-20048186, scaled to reflect more average daily concentrations vs. fasting"
