@@ -12,7 +12,7 @@ ParamNum,Parameter,Units,TV,LVM,HVM,LV,HV,Description,Reference
 11,ec50_vldl_prod,mM,26.67240933,0.25,4,6.668102332,106.6896373,EC50 for effect of TG-ER on VLDL production,Estimated from Adiels et al. Diabetolgia. 2006. Converted from % to mM TG in ER.
 12,chylo_basal_flux,mmols-TG/day,97.62521589,0.475,1.730357143,46.37197755,168.9264897,Daily absorption of chylomicron TG as mmols,See derived_parameters.jl
 13,dnl_basal_flux,mmols/day,9.665448866,0.1,8,0.966544887,77.32359093,Basal flux of de novo synthesized FA,"See derived_parameters.jl, range set to reflect NAFLD state"
-14,nefa_uptake_flux,mmols/day,171.6940241,0.25,37.74155817,42.92350604,6479.999998,Basal uptake of NEFAs into cytosol of hepatocytes,"See derived_parameters.jl, range assumed at 0.25 --> Limited by cardiac output."
+14,nefa_uptake_flux,mmols/day,171.6940241,0.25,37.74155817,80,686.7760964,Basal uptake of NEFAs into cytosol of hepatocytes,"See derived_parameters.jl, range assumed at 0.25 --> Limited by cardiac output."
 15,vd_tg_p,L,4.515,0.568557467,1.431442533,2.567036961,6.462963036,Vol. dist. TG in plasma,https://doi.org/10.1007/s11745-001-0696-6
 16,vd_cyt,L,0.49623,0.527728086,1.472271914,0.261874508,0.730585492,Vol. of hepatocyte cytosol (total),See derived_parameters.jl
 17,vd_er,L,0.1587936,0.527728086,1.472271914,0.083799843,0.233787357,Vol. of hepatocyte endoplasmic reticulum (total),» How big is the endoplasmic reticulum of cells? (bionumbers.org)

@@ -30,9 +30,10 @@ FRAC_FAST_TG = parse.(Float64,df_rp.VALUE[df_rp.RUN_PARAMETER .== "FRAC_FAST_TG"
 MH_LOG_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_LOG_FIT"][1]))  # Flag for setting M-H to use log boundaries for parameters
 MH_FIT = parsebool(string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "MH_FIT"][1])) # Flag for doing the PP fitting vs. loading existing, setting to true is a much longer run.
 JLD2_PP_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "JLD2_PP_FILE"][1])
+PARAM_FILE = string(df_rp.VALUE[df_rp.RUN_PARAMETER .== "PARAM_FILE"][1])
 
 # Read in parameters and their ranges:
-df = CSV.read("parameters_pluto_FINAL.csv",DataFrame)
+df = CSV.read(PARAM_FILE,DataFrame)
 NUM_PARAM = size(df)[1] # Total number of parameters, only the first NUM_PARAM_FIT are fitted in M-H algorithm
 
 # Initial parameter vector:

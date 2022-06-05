@@ -1,8 +1,9 @@
 RUN_PARAMETER,VALUE,DESCRIPTION
-MAX_PP,500000,Maximum number of plausible patients
+MAX_PP,35000,Maximum number of plausible patients
 NUM_SPECIES,5,Number of species (equations) in the model
 NUM_PARAM_FIT,14,"Number of parameters to fit. Right now, this means 1:NUM_PARAM_FIT are fitted."
 FRAC_FAST_TG,0.8,Fraction of triglyceride that is in the fasted state. This parameter can be moved to the PP search.
 MH_LOG_FIT,TRUE,Flag for log (TRUE) vs. linear (FALSE) parameter fitting.
 MH_FIT,TRUE,Flag for full PP fitting (TRUE) vs. loading a pre-existing JLD2_PP_FILE
-JLD2_PP_FILE,save_pp.jld2,String name of JLD2_PP file. If MH_FIT is FALSE this will load direct.
+JLD2_PP_FILE,short.jld2,String name of JLD2_PP file. If MH_FIT is FALSE this will load direct.
+PARAM_FILE,parameters_pluto.csv,Parameter file for run
