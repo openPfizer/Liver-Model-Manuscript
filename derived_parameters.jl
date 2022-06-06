@@ -92,11 +92,11 @@ begin
 	tg_plasma_low = 30/tg_MW*10.0 # [mM], low plasma TG value, mg/dL --> mM
 	tg_plasma_high = 750/tg_MW*10.0 # [mM], high plasma TG value, mg/dL --> mM
 
-	lf_prct_low = 1 # [%], low liver fat as vol. %. Functionally, there are many people without observable liver fat, set very low, but non-zero
-	lf_prct_high = 60 # [%], high liver fast as vol. %
+	lf_prct_low = 0.3 # [%], low liver fat as vol. %. Functionally, there are many people without observable liver fat, set very low, but non-zero
+	lf_prct_high = 67.5 # [%], high liver fast as vol. %
 
-	#Q_cardiac = 5*1440.0 # [L/day], cardiac output of adult converted to per day
-	#nefa_high = 0.900 # [mM], https://doi.org/10.1161/01.ATV.20.6.1588, Table 1, Diabetic group.
+	Q_cardiac = 5*1440.0 # [L/day], cardiac output of adult converted to per day
+	nefa_high = 0.900 # [mM], https://doi.org/10.1161/01.ATV.20.6.1588, Table 1, Diabetic group.
 	
 	md"""
 	### Useful constants for calculations
@@ -260,16 +260,14 @@ begin
 	df[df.Parameter .== "chylo_basal_flux", :HVM] .= diet_kcals_high/diet_kcals*0.45/0.35
 	df[df.Parameter .== "dnl_basal_flux", :LVM] .= dnl_low
 	df[df.Parameter .== "dnl_basal_flux", :HVM] .= dnl_high
-	#df[df.Parameter .== "nefa_uptake_flux", :LVM] .= No lower bound, keep at 0.25 multiplier
-	#df[df.Parameter .== "nefa_uptake_flux", :HVM] .= Q_cardiac*nefa_high/nefa_uptake_flux # Based on limitations only by cardiac output
+	df[df.Parameter .== "nefa_uptake_flux", :LVM] .= 0.5 # If NEFAs are allowed to go too low, they become a non-contributor to hepatic FAs, which is in contrast to Lambert et al. Narrow the lower window a bit. 
+	#df[df.Parameter .== "nefa_uptake_flux", :HVM] .= 4.0 #Alternative (much wider) Q_cardiac*nefa_high/nefa_uptake_flux # Based on limitations only by cardiac output
 	df[df.Parameter .== "vd_tg_p", :LVM] .= vd_tg_plasma_low/vd_tg_plasma
 	df[df.Parameter .== "vd_tg_p", :HVM] .= vd_tg_plasma_high/vd_tg_plasma
 	df[df.Parameter .== "vd_cyt", :LVM] .= mass_liver_low
 	df[df.Parameter .== "vd_cyt", :HVM] .= mass_liver_high
 	df[df.Parameter .== "vd_er", :LVM] .= mass_liver_low
 	df[df.Parameter .== "vd_er", :HVM] .= mass_liver_high
-	
-	
 	
 	lf_frac_high = lf_prct_high/100
 	lf_frac_low = lf_prct_low/100
