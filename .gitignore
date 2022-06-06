@@ -1,4 +1,12 @@
+.DS_Store
+Figure03.jpg
+Figure04.jpg
+Figure05.jpg
 *.jpeg
 *.png
 test.jpg
 Figure02.jpg
+<<<<<<< HEAD
+=======
+~$parameters.xlsx
+>>>>>>> rebase-resubmit

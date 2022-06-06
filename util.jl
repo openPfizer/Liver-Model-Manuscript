@@ -9,7 +9,7 @@ function getLTGprct(u::Vector{Float64},p)
     mw_tg = 772
     vd_cyt = p[16] # [L]
     vd_er = p[17] # [L]
-    hepat_vol = vd_cyt + vd_er # [L]
+    hepat_vol = 0.95*0.7089 # [L], estimate of non-LTG hepatocyte volume, see Pluto notebook: derived_parameters.jl
     ltg_mass = (u[2]*vd_cyt+u[4]*vd_er)*mw_tg/1000.0 # [g-TG], includes mg-->g conversion
     ltg_vol = ltg_mass/rho_tg # [L-TG]
     ltg_prct = 100*ltg_vol/(ltg_vol + hepat_vol) # [%]
@@ -272,4 +272,16 @@ function joint_tg_dist(frac_fast_tg)
 
         return ellipsexy
 
+    end
+
+
+    function LogNormFromUT(MeanX::Float64,LV::Float64,HV::Float64)
+        # Univariate LogNormal from untransformed values
+        
+        sigma = log(HV/LV)/3.2897072539029435
+        #VarX = StdX^2
+        mu = log(MeanX) - sigma^2/2#log(MeanX^2/sqrt(VarX + MeanX^2))
+        #sigma = sqrt(log(VarX/MeanX^2+1))
+
+        return LogNormal(mu,sigma)
     end
