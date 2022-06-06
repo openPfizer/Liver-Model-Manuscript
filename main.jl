@@ -83,7 +83,7 @@ end
 # Create a DataFrame of plausible patients, this may be useful:
 SMALL_NUM = 1e-6
 
-df_pp = DataFrame(p_pp',:auto)
+df_pp = DataFrame(pp_p',:auto)
 rename!(df_pp,string.(df.Parameter))
 df_pp_scaled = df_pp
 for ii = 1:size(df_pp)[2]
