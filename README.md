@@ -10,7 +10,7 @@ QSP model of liver lipid metabolism for 2022 publication.
 
 # Input Files
 * `run_paramaters.csv` - Key parameters for controlling a run of the model, including fit flags and the number of plausible patients to generate
-* `parameters_pluto.csv` - Default parameter file, written by executing `derived_parameters.jl` based on initial seeding from `parameters.xlsx`. The values in this file are the ones that used in `main.jl` by default.
+* `parameters_pluto.csv` - Default parameter file, written by executing `derived_parameters.jl` based on initial seeding from `parameters.xlsx`. The values in this file are the ones that are used in `main.jl` by default.
 * `parameters.xlsx` - Parameter file template that is the input to `derived_parameters.jl` change this file if adding new parameters to the model.
 
 # Additional Functions
