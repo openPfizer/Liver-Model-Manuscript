@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Source Code for the Liver Lipid Metabolism Model
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Theodore R. Rieger
+    family-names: Rieger
+    name-particle: Theodore
+    email: ted.rieger@pfizer.com
+    affiliation: Pfizer Inc
+    orcid: 'https://orcid.org/0000-0002-9610-0983'
+  - given-names: Richard J. Allen
+    name-particle: Richard
+    family-names: Allen
+    affiliation: Pfizer Inc
+  - given-names: C.J. Musante
+    name-particle: C.J.
+    family-names: Musante
+    affiliation: Pfizer Inc
