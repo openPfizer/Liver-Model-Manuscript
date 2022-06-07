@@ -22,3 +22,27 @@ authors:
     name-particle: C.J.
     family-names: Musante
     affiliation: Pfizer Inc
+identifiers:
+  - type: url
+    value: >-
+      https://github.com/openPfizer/Liver-Model-Manuscript
+    description: GitHub repository for the source code.
+  - type: doi
+    value: 10.5281/zenodo.6621096
+    description: Zenodo DOI for the most recent release.
+repository-code: >-
+  https://github.com/openPfizer/Liver-Model-Manuscript
+abstract: >-
+  Source code accompanying Rieger et al. manuscript
+  on liver lipid metabolism. This software will
+  reproduce all the results in the manuscript.
+keywords:
+  - NAFLD
+  - QSP
+  - Mathematical Model
+  - Virtual Patient
+  - NASH
+  - Metabolic Syndrome
+license: Apache-2.0
+version: v1.1
+date-released: '2022-06-07'
