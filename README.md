@@ -8,6 +8,11 @@ QSP model of liver lipid metabolism for 2022 publication.
 * `setup.jl` - Will initialize the project, this step can be slow, especially the first time, hence we have split it from the main script.
 * `main.jl` - Main project script, executing this script will generate the figures from the manuscript.
 
+# Input Files
+* `run_paramaters.csv` - Key parameters for controlling a run of the model, including fit flags and the number of plausible patients to generate
+* `parameters_pluto.csv` - Default parameter file, written by executing `derived_parameters.jl` based on initial seeding from `parameters.xlsx`
+* `parameters.xlsx` - Parameter file template that is the input to `derived_parameters.jl` change this file if adding new parameters to the model.
+
 # Additional Functions
 * `derived_parameters.jl` - Pluto notebook where we derived some of the baseline parameter values from the model. Load by launching Pluto and opening this notebook.
 * `dxdt.jl` - ODEs of the model
